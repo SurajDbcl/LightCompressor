@@ -16,8 +16,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.abedelazizshe.lightcompressorlibrary.CompressionListener
+import com.abedelazizshe.lightcompressorlibrary.Logger
 import com.abedelazizshe.lightcompressorlibrary.VideoCompressor
-import com.abedelazizshe.lightcompressorlibrary.VideoQuality
 import com.abedelazizshe.lightcompressorlibrary.config.Configuration
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_main.*
@@ -156,7 +156,7 @@ class MainActivity : AppCompatActivity() {
                         listener = object : CompressionListener {
                             override fun onProgress(percent: Float) {
                                 //Update UI
-                                if (percent <= 100 && percent.toInt() % 5 == 0)
+                                if (percent <= 100 && percent.toInt() % 2 == 0)
                                     runOnUiThread {
                                         progress.text = "${percent.toLong()}%"
                                         progressBar.progress = percent.toInt()
@@ -167,10 +167,12 @@ class MainActivity : AppCompatActivity() {
                                 time = System.currentTimeMillis()
                                 progress.visibility = View.VISIBLE
                                 progressBar.visibility = View.VISIBLE
+                                val inputFileSize=getFileSize(File(path).length())
                                 originalSize.text =
-                                    "Original size: ${getFileSize(File(path).length())}"
+                                    "Original size: $inputFileSize"
                                 progress.text = ""
                                 progressBar.progress = 0
+                                Logger.d { "Input-> file size: $inputFileSize" }
                             }
 
                             override fun onSuccess() {
@@ -183,8 +185,8 @@ class MainActivity : AppCompatActivity() {
 
                                 time = System.currentTimeMillis() - time
                                 timeTaken.text =
-                                    "Duration: ${DateUtils.formatElapsedTime(time / 1000)}"
-
+                                    "time taken : ${DateUtils.formatElapsedTime(time / 1000)}"
+                                Logger.d { "Output-> file size: ${getFileSize(newSizeValue)}, time taken : ${time .div( 1000)}Sec " }
                                 Looper.myLooper()?.let {
                                     Handler(it).postDelayed({
                                         progress.visibility = View.GONE
@@ -203,11 +205,7 @@ class MainActivity : AppCompatActivity() {
                                 // make UI changes, cleanup, etc
                             }
                         },
-                        configureWith = Configuration(
-                            quality = VideoQuality.HIGH,
-                            frameRate = 24,
-                            isMinBitrateCheckEnabled = true,
-                        )
+                        configureWith = Configuration()
                     )
                 }
             }

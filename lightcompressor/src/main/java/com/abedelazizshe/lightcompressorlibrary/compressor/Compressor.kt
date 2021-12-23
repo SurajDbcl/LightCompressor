@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import com.abedelazizshe.lightcompressorlibrary.CompressionProgressListener
+import com.abedelazizshe.lightcompressorlibrary.Logger
 import com.abedelazizshe.lightcompressorlibrary.config.Configuration
 import com.abedelazizshe.lightcompressorlibrary.utils.CompressorUtils.findTrack
 import com.abedelazizshe.lightcompressorlibrary.utils.CompressorUtils.generateWidthAndHeight
@@ -114,7 +115,7 @@ object Compressor {
 
         val durationData =
             mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-
+        Logger.d { "Input->, width: $width, height: $height, rotation: $rotationData, bitrate: $bitrateData" }
 
         if (rotationData.isNullOrEmpty() || bitrateData.isNullOrEmpty() || durationData.isNullOrEmpty()) {
             // Exit execution
@@ -207,7 +208,9 @@ object Compressor {
                     inputFormat,
                     outputFormat,
                     newBitrate,
-                    frameRate
+                    frameRate,
+                    newWidth,
+                    newHeight
                 )
 
                 val decoder: MediaCodec

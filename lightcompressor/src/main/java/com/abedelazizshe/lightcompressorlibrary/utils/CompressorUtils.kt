@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import com.abedelazizshe.lightcompressorlibrary.Logger
 import com.abedelazizshe.lightcompressorlibrary.VideoQuality
 import com.abedelazizshe.lightcompressorlibrary.video.Mp4Movie
 import java.io.File
@@ -91,7 +92,10 @@ object CompressorUtils {
         outputFormat: MediaFormat,
         newBitrate: Int,
         frameRate: Int?,
+        newWidth:Int,
+        newHeight:Int,
     ) {
+        Logger.d { "Input->, frameRate:${getInputFrameRate(inputFormat)}, frameInterval:${getInputFrameIntervalRate(inputFormat)}" }
         val newFrameRate = getFrameRate(inputFormat, frameRate)
         val iFrameInterval = getIFrameIntervalRate(inputFormat)
         outputFormat.apply {
@@ -123,8 +127,21 @@ object CompressorUtils {
                 "Output file parameters",
                 "videoFormat: $this"
             )
+            Logger.d { "Output->, width: $newWidth, height: $newHeight, rotation: 0, bitrate: $newBitrate,frameRate: $newFrameRate,frameInterval:$iFrameInterval" }
         }
     }
+
+    private fun getInputFrameRate(format: MediaFormat): Int {
+        return if (format.containsKey(MediaFormat.KEY_FRAME_RATE)) format.getInteger(MediaFormat.KEY_FRAME_RATE) else -1
+    }
+
+    private fun getInputFrameIntervalRate(format: MediaFormat): Int {
+        return if (format.containsKey(MediaFormat.KEY_I_FRAME_INTERVAL)) format.getInteger(
+            MediaFormat.KEY_I_FRAME_INTERVAL
+        )
+        else -1
+    }
+
 
     private fun getFrameRate(format: MediaFormat, frameRate: Int?): Int {
         if (frameRate != null) return frameRate
